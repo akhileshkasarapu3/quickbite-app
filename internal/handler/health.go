@@ -18,5 +18,6 @@ func HealthHandler(w http.ResponseWriter, r *http.Request){
 	healthCheckData := HealthData{
 		Message: "Quick Bite API is Running",
 	}
+	
 	response.WriteSuccess(w, http.StatusOK, healthCheckData)
 }

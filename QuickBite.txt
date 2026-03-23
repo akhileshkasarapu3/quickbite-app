@@ -69,3 +69,14 @@ workResponse := Work {
 
 $any: can be of type (data any)
 
+PHASE 2: Introduce a real router and versioned routes (router.go)
+
+err := http.ListenAndServe(":8080", appRouter)
+
+--
+mux := http.NewServeMux()
+under this we can registered routes 
+ - mux.HandleFunc("/api/v1/health", handler.HealthHandler)
+
+
+
