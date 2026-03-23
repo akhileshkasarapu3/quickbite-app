@@ -71,12 +71,27 @@ $any: can be of type (data any)
 
 PHASE 2: Introduce a real router and versioned routes (router.go)
 
-err := http.ListenAndServe(":8080", appRouter)
+- mux means multiplexer. In Go, it acts as a router.
 
---
-mux := http.NewServeMux()
-under this we can registered routes 
- - mux.HandleFunc("/api/v1/health", handler.HealthHandler)
+- We used http.NewServeMux() to create our own router, then used mux.HandleFunc() to connect a URL path to a handler function.
 
+    func RegisterRoutes() http.Handler{
+	    mux := http.NewServeMux()	// 1. local switchboard
+	    registerHealthRoutes(mux)   // 2. Register routes 
+	    return mux 
+    }
 
+Example:
+	•	/api/v1/health → HealthHandler
 
+- Then we passed that mux into http.ListenAndServe() so the server uses our custom routing.
+	appRouter := router.RegisterRoutes()
+    err := http.ListenAndServe(":8080", appRouter)
+
+Flow:
+request → mux checks path → matching handler runs → response returned
+
+- Why we used it:
+	•	built-in Go router
+	•	cleaner than putting routes directly everywhere
+	•	easier to organize and scale
