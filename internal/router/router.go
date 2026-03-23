@@ -16,6 +16,7 @@ func RegisterRoutes() http.Handler{
 	// mux.HandleFunc("/api/v1/health", handler.HealthHandler)
 	registerHealthRoutes(mux)
 	registerRestaurantRoutes(mux) 
+	registerOrderRoutes(mux)
 
 	return mux 
 }
