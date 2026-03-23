@@ -3,15 +3,14 @@ package main
 import (
 	"fmt"
 	"net/http"
+
+	"github.com/akhileshkasarapu3/quickbite/internal/handler"
 )
 
-// Runs on hitting /health URL
-func healthHandler(w http.ResponseWriter, r *http.Request){
-	fmt.Fprintln(w, "Quick Bite app is running")
-}
+
 
 func main(){
-	http.HandleFunc("/health", healthHandler)		// Register routes before calling
+	http.HandleFunc("/health", handler.HealthHandler)		// Register routes before calling
 
 	fmt.Println("Server is running on Port 8080")
 

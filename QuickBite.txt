@@ -1,2 +1,15 @@
 
 
+	•	cmd means runnable applications
+	•	api means this app is the API server
+	•	main.go is the starting point of the program
+
+Step 1: Checks health
+    - http.HandleFunc() :register routes
+    - http.ListenAndServe(":8080", nil): Start server
+    - func healthHandler(w http.ResponseWriter, r *http.Request)
+        - ResponseWriter: is an interface so no pointer is need
+        - Request: Is a struct holding variable data and fields
+
+
+Step 2: Creating Handler
