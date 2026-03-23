@@ -2,7 +2,6 @@ package router
 
 import (
 	"net/http"
-	"github.com/akhileshkasarapu3/quickbite/internal/handler"
 )
 
 
@@ -14,7 +13,9 @@ func RegisterRoutes() http.Handler{
 	
 	// 2. Register routes 
 	// version v1 api routes 
-	mux.HandleFunc("/api/v1/health", handler.HealthHandler)
+	// mux.HandleFunc("/api/v1/health", handler.HealthHandler)
+	registerHealthRoutes(mux)
+
 
 	return mux 
 }
