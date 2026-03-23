@@ -12,4 +12,24 @@ Step 1: Checks health
         - Request: Is a struct holding variable data and fields
 
 
-Step 2: Creating Handler
+Step 2: Return a real JSON API response (health.go)
+
+a. Set Response type to json
+b. create response object
+c. Convert it to json
+    - json.NewEncoder(w).Encode(response)
+        * NewEncoder  
+          - pipe to server output
+          - creates encoder and hooks it to server output
+
+        * Encoder
+          - converts the Go map into JSON and writes it into the response.
+d. send it back to client
+
+=> Error Codes:
+	•	200 = success
+	•	201 = created
+	•	400 = bad request
+	•	404 = not found
+	•	500 = server error
+
