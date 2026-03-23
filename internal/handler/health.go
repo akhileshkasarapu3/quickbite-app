@@ -10,7 +10,28 @@ type HealthResponse struct {
 	Message string `json:"message"`
 }
 
+type ErrorResponse struc{
+	Status string `json:"status"`
+	Message string `json:"message"`
+}
+
 func HealthHandler(w http.ResponseWriter, r *http.Request){
+	if r.Method != http.MethodGet {
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusMethodNotAllowed)
+
+		errorResponse := ErrorResponse{
+			Status: "error"
+			Message: "method not allowed",
+		}
+
+		err := json.NewEncoder(w).Encode(errResponse)
+		if err != nil {
+			http.Error(w, "Failed to Encode Response", http.StatusInternalServerError)
+			return
+		}
+		return
+	}
 	w.Header().Set("Content-Type", "application/json")
 
 	w.WriteHeader(http.StatusOK)		// Set http status code 200

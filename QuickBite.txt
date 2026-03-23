@@ -46,3 +46,19 @@ response := HealthResponse{
     Status : "Success",
     Message : "Quick Bite is running",
 }
+
+=> METHODS
+
+http.MethodGet
+http.MethodPost
+http.MethodPut
+http.MethodDelete
+
+=> STRUCT PATTERN
+
+type (Work) struct {
+    Field1 type_field `json:"field1"`
+}
+
+
+
