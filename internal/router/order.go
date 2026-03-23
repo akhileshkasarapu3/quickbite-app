@@ -8,4 +8,5 @@ import (
 
 func registerOrderRoutes(mux *http.ServeMux) {
 	mux.HandleFunc("/api/v1/orders", handler.CreateOrder)
+	mux.HandleFunc("/api/v1/order", handler.GetOrderByID)
 }

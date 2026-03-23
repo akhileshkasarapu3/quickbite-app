@@ -34,3 +34,30 @@ func CreateOrder(w http.ResponseWriter, r *http.Request) {
 	// Return 201 Created when a resource is created successfully.
 	response.WriteSuccess(w, http.StatusCreated, order)
 }
+
+// GetOrderByID handles GET /api/v1/order?id=ord_1001.
+func GetOrderByID(w http.ResponseWriter, r *http.Request) {
+	// Allow only GET requests.
+	if r.Method != http.MethodGet {
+		response.WriteError(w, http.StatusMethodNotAllowed, "method not allowed")
+		return
+	}
+
+	// Read order ID from query string.
+	orderID := r.URL.Query().Get("id")
+	if orderID == "" {
+		response.WriteError(w, http.StatusBadRequest, "order id is required")
+		return
+	}
+
+	// Ask service layer for the order.
+	order, found := service.GetOrderByID(orderID)
+	if !found {
+		response.WriteError(w, http.StatusNotFound, "order not found")
+		return
+	}
+
+	// Return successful response.
+	response.WriteSuccess(w, http.StatusOK, order)
+}
+
