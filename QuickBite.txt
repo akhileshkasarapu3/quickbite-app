@@ -33,3 +33,16 @@ d. send it back to client
 	•	404 = not found
 	•	500 = server error
 
+=> Response types
+
+-> Maps
+response := map[string]string {
+		"status": "success",
+		"message": "Quickbite is Running Successfully!",
+	}
+
+-> Structs
+response := HealthResponse{
+    Status : "Success",
+    Message : "Quick Bite is running",
+}
