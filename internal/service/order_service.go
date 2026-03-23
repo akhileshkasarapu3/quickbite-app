@@ -21,8 +21,7 @@ type Order struct {
 }
 
 // getOrderData returns temporary in-memory order data.
-func getOrderData() []Order {
-	return []Order{
+var orders = []Order{
 		{
 			ID:              "ord_1001",
 			CustomerName:    "Akhilesh",
@@ -40,7 +39,7 @@ func getOrderData() []Order {
 			Status:          "preparing",
 		},
 	}
-}
+
 
 // CreateOrder validates input and builds a new order.
 func CreateOrder(req CreateOrderRequest) (Order, string) {
@@ -73,13 +72,14 @@ func CreateOrder(req CreateOrderRequest) (Order, string) {
 		Status:          "placed",
 	}
 
+	orders = append(orders, order)
+
 	return order, ""
 }
 
 // GetOrderByID searches for an order by ID.
 func GetOrderByID(id string) (Order, bool) {
-	orders := getOrderData()
-
+	
 	for _, order := range orders {
 		if order.ID == id {
 			return order, true
@@ -87,4 +87,8 @@ func GetOrderByID(id string) (Order, bool) {
 	}
 
 	return Order{}, false
+}
+
+func GetOrder() []Order {
+	return orders
 }
