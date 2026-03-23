@@ -60,5 +60,12 @@ type (Work) struct {
     Field1 type_field `json:"field1"`
 }
 
+fill the work fields
+workResponse := Work {
+    Field1: "akhilesh" OR 12 etc
+}
 
+
+
+$any: can be of type (data any)
 
