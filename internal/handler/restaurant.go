@@ -3,39 +3,9 @@ package handler
 import (
 	"net/http"
 	"github.com/akhileshkasarapu3/quickbite/internal/response"
+	"github.com/akhileshkasarapu3/quickbite/internal/service"
 )
 
-
-// One restaurant
-type Restaurant struct {
-	ID string `json:"id"`
-	Name string `json:"name"`
-	Cuisine string `json:"cuisine"`
-	Rating float64 `json:"rating"`
-	IsOpen bool	`json:"is_open"`
-	ETAInMin int `json:"eta_in_min"`
-}
-
-func getRestaurantData() []Restaurant {
-	return []Restaurant{
-		{
-			ID:   "res_001",
-			Name:	"Spice Rack",
-			Cuisine: "Indian",
-			Rating: 4.0,
-			IsOpen: true,
-			ETAInMin: 25,
-		},
-		{
-			ID:   "res_002",
-			Name:	"Pizza Point",
-			Cuisine: "Indian",
-			Rating: 4.2,
-			IsOpen: false,
-			ETAInMin: 15,
-		},
-	}
-}
 
 func GetRestaurants(w http.ResponseWriter, r *http.Request){
 
@@ -44,7 +14,7 @@ func GetRestaurants(w http.ResponseWriter, r *http.Request){
 		return 
 	}
 
-	restaurants := getRestaurantData() 
+	restaurants := service.GetRestaurants() 
 	response.WriteSuccess(w, http.StatusOK, restaurants)
 }
 
@@ -61,14 +31,11 @@ func GetRestaurantByID(w http.ResponseWriter, r *http.Request){
 		return
 	}
 
-	restaurants := getRestaurantData()
-
-	for _, restaurant := range restaurants {
-		if restaurant.ID == restaurantID {
-			response.WriteSuccess(w, http.StatusOK, restaurant)
-			return
-		}
+	restaurant, found := service.GetRestaurantByID(restaurantID)
+	if !found {
+		response.WriteError(w, http.StatusNotFound, "restaurant not found")
+		return
 	}
 
-	response.WriteError(w, http.StatusNotFound, "restaurant doesn't exist")
+	response.WriteSuccess(w, http.StatusOK, restaurant)
 }

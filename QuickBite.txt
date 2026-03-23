@@ -95,3 +95,10 @@ request → mux checks path → matching handler runs → response returned
 	•	built-in Go router
 	•	cleaner than putting routes directly everywhere
 	•	easier to organize and scale
+
+
+$ service: move restaurant data out of the handler and into a service layer.
+Service layer holds business logic.
+Handler layer handles HTTP only.
+Handler calls service instead of owning data directly.
+This makes code easier to scale and easier to replace with database logic later.
