@@ -16,14 +16,8 @@ type Restaurant struct {
 	ETAInMin int `json:"eta_in_min"`
 }
 
-func GetRestaurants(w http.ResponseWriter, r *http.Request){
-
-	if r.Method != http.MethodGet {
-		response.WriteError(w, http.StatusMethodNotAllowed, "method not allowed")
-		return 
-	}
-
-	restaurants := []Restaurant {
+func getRestaurantData() []Restaurant {
+	return []Restaurant{
 		{
 			ID:   "res_001",
 			Name:	"Spice Rack",
@@ -41,6 +35,40 @@ func GetRestaurants(w http.ResponseWriter, r *http.Request){
 			ETAInMin: 15,
 		},
 	}
+}
 
+func GetRestaurants(w http.ResponseWriter, r *http.Request){
+
+	if r.Method != http.MethodGet {
+		response.WriteError(w, http.StatusMethodNotAllowed, "method not allowed")
+		return 
+	}
+
+	restaurants := getRestaurantData() 
 	response.WriteSuccess(w, http.StatusOK, restaurants)
+}
+
+
+func GetRestaurantByID(w http.ResponseWriter, r *http.Request){
+	if r.Method != http.MethodGet {
+		response.WriteError(w, http.StatusMethodNotAllowed, "method not allowed")
+		return 
+	}
+
+	restaurantID := r.URL.Query().Get("id")
+	if restaurantID == "" {
+		response.WriteError(w, http.StatusBadRequest, "restaurant id is required")
+		return
+	}
+
+	restaurants := getRestaurantData()
+
+	for _, restaurant := range restaurants {
+		if restaurant.ID == restaurantID {
+			response.WriteSuccess(w, http.StatusOK, restaurant)
+			return
+		}
+	}
+
+	response.WriteError(w, http.StatusNotFound, "restaurant doesn't exist")
 }

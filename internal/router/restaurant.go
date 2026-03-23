@@ -7,4 +7,5 @@ import (
 
 func registerRestaurantRoutes(mux *http.ServeMux) {
 	mux.HandleFunc("/api/v1/restaurants", handler.GetRestaurants)
+	mux.HandleFunc("/api/v1/restaurant", handler.GetRestaurantByID)
 }
