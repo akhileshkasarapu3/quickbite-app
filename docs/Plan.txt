@@ -1,0 +1,53 @@
+9. Why each file is written separately
+
+Now the important understanding:
+
+Why not put everything in main.go?
+
+Because one request has different types of work.
+
+Starting server is not the same as matching routes.
+Matching routes is not the same as reading JSON.
+Reading JSON is not the same as business validation.
+Business validation is not the same as formatting response.
+
+That is why we separate files.
+
+10. Simple rule for writing each file
+
+When you are confused, use this rule:
+
+Router file
+
+Write only:
+“which path goes to which handler?”
+
+Example:
+mux.HandleFunc("/api/v1/orders", ...)
+
+Handler file
+
+Write only:
+“how do I read this request and call service?”
+
+Example:
+json.NewDecoder(r.Body).Decode(&req)
+service.CreateOrder(req)
+
+Service file
+
+Write only:
+“what business logic should happen?”
+
+Example:
+if customerName == "" { ... }
+orders = append(orders, order)
+
+Response file
+
+Write only:
+“how do I send JSON back cleanly?”
+
+Example:
+WriteSuccess(...)
+WriteError(...)

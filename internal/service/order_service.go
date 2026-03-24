@@ -1,6 +1,10 @@
 package service
 
-import "strings"
+import (
+	"strings"
+	"fmt"
+	"sync"
+)
 
 // CreateOrderRequest represents the incoming order creation payload.
 type CreateOrderRequest struct {
@@ -20,26 +24,11 @@ type Order struct {
 	Status          string   `json:"status"`
 }
 
-// getOrderData returns temporary in-memory order data.
-var orders = []Order{
-		{
-			ID:              "ord_1001",
-			CustomerName:    "Akhilesh",
-			RestaurantID:    "res_101",
-			Items:           []string{"Chicken Biryani", "Double Ka Meetha"},
-			DeliveryAddress: "1417 Sage Way, Aubrey, TX",
-			Status:          "placed",
-		},
-		{
-			ID:              "ord_1002",
-			CustomerName:    "Rahul",
-			RestaurantID:    "res_102",
-			Items:           []string{"Farmhouse Pizza"},
-			DeliveryAddress: "Dallas, TX",
-			Status:          "preparing",
-		},
-	}
-
+var (
+	orders = []Order{}
+	nextOrderNumber = 1001
+	orderStorageLock sync.Mutex
+)
 
 // CreateOrder validates input and builds a new order.
 func CreateOrder(req CreateOrderRequest) (Order, string) {
@@ -63,8 +52,15 @@ func CreateOrder(req CreateOrderRequest) (Order, string) {
 		return Order{}, "delivery address is required"
 	}
 
+	// Lock before touching shared writable state.
+	orderStorageLock.Lock()
+	defer orderStorageLock.Unlock()
+
+	orderID := fmt.Sprintf("ord_%d", nextOrderNumber)
+	nextOrderNumber++
+
 	order := Order{
-		ID:              "ord_1001",
+		ID:              orderID,
 		CustomerName:    customerName,
 		RestaurantID:    restaurantID,
 		Items:           req.Items,
@@ -79,6 +75,10 @@ func CreateOrder(req CreateOrderRequest) (Order, string) {
 
 // GetOrderByID searches for an order by ID.
 func GetOrderByID(id string) (Order, bool) {
+	// Lock while reading shared state too.
+	orderStorageLock.Lock()
+	defer orderStorageLock.Unlock()
+
 	for _, order := range orders {
 		if order.ID == id {
 			return order, true
@@ -89,5 +89,12 @@ func GetOrderByID(id string) (Order, bool) {
 }
 
 func GetOrders() []Order {
-	return orders
+	orderStorageLock.Lock()
+	defer orderStorageLock.Unlock()
+
+	// Return a copy, not the original slice.
+	result := make([]Order, len(orders))
+	copy(result, orders)
+
+	return result
 }
