@@ -1,60 +1,34 @@
 package service
 
 import (
-	"fmt"
 	"strings"
-	"sync"
+
+	"github.com/akhileshkasarapu3/quickbite/internal/model"
+	"github.com/akhileshkasarapu3/quickbite/internal/repository"
 )
 
-type CreateOrderRequest struct {
-	CustomerName    string   `json:"customer_name"`
-	RestaurantID    string   `json:"restaurant_id"`
-	Items           []string `json:"items"`
-	DeliveryAddress string   `json:"delivery_address"`
-}
-
-type Order struct {
-	ID              string   `json:"id"`
-	CustomerName    string   `json:"customer_name"`
-	RestaurantID    string   `json:"restaurant_id"`
-	Items           []string `json:"items"`
-	DeliveryAddress string   `json:"delivery_address"`
-	Status          string   `json:"status"`
-}
-
-var (
-	orders           = []Order{}
-	nextOrderNumber  = 1001
-	orderStorageLock sync.RWMutex
-)
-
-func CreateOrder(req CreateOrderRequest) (Order, string) {
+func CreateOrder(req model.CreateOrderRequest) (model.Order, string) {
+	// Transform data
 	customerName := strings.TrimSpace(req.CustomerName)
 	restaurantID := strings.TrimSpace(req.RestaurantID)
 	deliveryAddress := strings.TrimSpace(req.DeliveryAddress)
 
+	// validate the data
 	if customerName == "" {
-		return Order{}, "customer name is required"
+		return model.Order{}, "customer name is required"
 	}
 	if restaurantID == "" {
-		return Order{}, "restaurant id is required"
+		return model.Order{}, "restaurant id is required"
 	}
 	if len(req.Items) == 0 {
-		return Order{}, "at least one item is required"
+		return model.Order{}, "at least one item is required"
 	}
 	if deliveryAddress == "" {
-		return Order{}, "delivery address is required"
+		return model.Order{}, "delivery address is required"
 	}
 
-	// Write lock because we modify shared state.
-	orderStorageLock.Lock()
-	defer orderStorageLock.Unlock()
-
-	orderID := fmt.Sprintf("ord_%d", nextOrderNumber)
-	nextOrderNumber++
-
-	order := Order{
-		ID:              orderID,
+	// build object
+	order := model.Order{
 		CustomerName:    customerName,
 		RestaurantID:    restaurantID,
 		Items:           req.Items,
@@ -62,32 +36,17 @@ func CreateOrder(req CreateOrderRequest) (Order, string) {
 		Status:          "placed",
 	}
 
-	orders = append(orders, order)
+	// Ask repository to store it and generate ID.
+	savedOrder := repository.SaveOrder(order)
 
-	return order, ""
+	return savedOrder, ""
 }
 
-func GetOrderByID(id string) (Order, bool) {
-	// Read lock because we only read shared state.
-	orderStorageLock.RLock()
-	defer orderStorageLock.RUnlock()
-
-	for _, order := range orders {
-		if order.ID == id {
-			return order, true
-		}
-	}
-
-	return Order{}, false
+func GetOrderByID(id string) (model.Order, bool) {
+	// Use it from repo layer.
+	return repository.GetOrderByID(id)
 }
 
-func GetOrders() []Order {
-	// Read lock because we only read shared state.
-	orderStorageLock.RLock()
-	defer orderStorageLock.RUnlock()
-
-	result := make([]Order, len(orders))
-	copy(result, orders)
-
-	return result
+func GetOrders() []model.Order {
+	return repository.GetOrders()
 }

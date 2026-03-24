@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"net/http"
 
+	"github.com/akhileshkasarapu3/quickbite/internal/model"
 	"github.com/akhileshkasarapu3/quickbite/internal/response"
 	"github.com/akhileshkasarapu3/quickbite/internal/service"
 )
@@ -16,7 +17,7 @@ func CreateOrder(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Decode incoming JSON body into request struct.
-	var req service.CreateOrderRequest
+	var req model.CreateOrderRequest
 
 	err := json.NewDecoder(r.Body).Decode(&req)
 	if err != nil {
