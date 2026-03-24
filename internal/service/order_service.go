@@ -79,7 +79,6 @@ func CreateOrder(req CreateOrderRequest) (Order, string) {
 
 // GetOrderByID searches for an order by ID.
 func GetOrderByID(id string) (Order, bool) {
-	
 	for _, order := range orders {
 		if order.ID == id {
 			return order, true
@@ -89,6 +88,6 @@ func GetOrderByID(id string) (Order, bool) {
 	return Order{}, false
 }
 
-func GetOrder() []Order {
+func GetOrders() []Order {
 	return orders
 }

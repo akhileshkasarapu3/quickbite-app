@@ -35,7 +35,17 @@ func CreateOrder(w http.ResponseWriter, r *http.Request) {
 	response.WriteSuccess(w, http.StatusCreated, order)
 }
 
-// GetOrderByID handles GET /api/v1/order?id=ord_1001.
+func GetOrders(w http.ResponseWriter, r *http.Request){
+	if r.Method != http.MethodGet {
+		response.WriteError(w, http.StatusMethodNotAllowed, "invalid method")
+		return
+	}
+
+	orders := service.GetOrders()
+
+	response.WriteSuccess(w, http.StatusOK, orders)
+}
+
 func GetOrderByID(w http.ResponseWriter, r *http.Request) {
 	// Allow only GET requests.
 	if r.Method != http.MethodGet {
@@ -50,14 +60,11 @@ func GetOrderByID(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Ask service layer for the order.
 	order, found := service.GetOrderByID(orderID)
 	if !found {
 		response.WriteError(w, http.StatusNotFound, "order not found")
 		return
 	}
 
-	// Return successful response.
 	response.WriteSuccess(w, http.StatusOK, order)
 }
-
