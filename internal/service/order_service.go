@@ -1,12 +1,11 @@
 package service
 
 import (
-	"strings"
 	"fmt"
+	"strings"
 	"sync"
 )
 
-// CreateOrderRequest represents the incoming order creation payload.
 type CreateOrderRequest struct {
 	CustomerName    string   `json:"customer_name"`
 	RestaurantID    string   `json:"restaurant_id"`
@@ -14,7 +13,6 @@ type CreateOrderRequest struct {
 	DeliveryAddress string   `json:"delivery_address"`
 }
 
-// Order represents the created order returned by the API.
 type Order struct {
 	ID              string   `json:"id"`
 	CustomerName    string   `json:"customer_name"`
@@ -25,12 +23,11 @@ type Order struct {
 }
 
 var (
-	orders = []Order{}
-	nextOrderNumber = 1001
-	orderStorageLock sync.Mutex
+	orders           = []Order{}
+	nextOrderNumber  = 1001
+	orderStorageLock sync.RWMutex
 )
 
-// CreateOrder validates input and builds a new order.
 func CreateOrder(req CreateOrderRequest) (Order, string) {
 	customerName := strings.TrimSpace(req.CustomerName)
 	restaurantID := strings.TrimSpace(req.RestaurantID)
@@ -39,20 +36,17 @@ func CreateOrder(req CreateOrderRequest) (Order, string) {
 	if customerName == "" {
 		return Order{}, "customer name is required"
 	}
-
 	if restaurantID == "" {
 		return Order{}, "restaurant id is required"
 	}
-
 	if len(req.Items) == 0 {
 		return Order{}, "at least one item is required"
 	}
-
 	if deliveryAddress == "" {
 		return Order{}, "delivery address is required"
 	}
 
-	// Lock before touching shared writable state.
+	// Write lock because we modify shared state.
 	orderStorageLock.Lock()
 	defer orderStorageLock.Unlock()
 
@@ -73,11 +67,10 @@ func CreateOrder(req CreateOrderRequest) (Order, string) {
 	return order, ""
 }
 
-// GetOrderByID searches for an order by ID.
 func GetOrderByID(id string) (Order, bool) {
-	// Lock while reading shared state too.
-	orderStorageLock.Lock()
-	defer orderStorageLock.Unlock()
+	// Read lock because we only read shared state.
+	orderStorageLock.RLock()
+	defer orderStorageLock.RUnlock()
 
 	for _, order := range orders {
 		if order.ID == id {
@@ -89,10 +82,10 @@ func GetOrderByID(id string) (Order, bool) {
 }
 
 func GetOrders() []Order {
-	orderStorageLock.Lock()
-	defer orderStorageLock.Unlock()
+	// Read lock because we only read shared state.
+	orderStorageLock.RLock()
+	defer orderStorageLock.RUnlock()
 
-	// Return a copy, not the original slice.
 	result := make([]Order, len(orders))
 	copy(result, orders)
 
