@@ -66,3 +66,30 @@ func GetOpenRestaurants(w http.ResponseWriter, r *http.Request) {
 	openRestaurants := service.GetOpenRestaurants()
 	response.WriteSuccess(w, http.StatusOK, openRestaurants)
 }
+
+func GetSortedRestaurants(w http.ResponseWriter, r *http.Request){
+	if r.Method != http.MethodGet {
+		response.WriteError(w, http.StatusMethodNotAllowed, "method not allowed")
+		return
+	}
+
+	sortBy := r.URL.Query().Get("by")
+	if sortBy == "" {
+		response.WriteError(w, http.StatusBadRequest, "sort field is required")
+		return 
+	}
+
+	order := r.URL.Query().Get("order")
+	if order == "" {
+		response.WriteError(w, http.StatusBadRequest, "sort field is required")
+		return
+	}
+
+	sortedRestaurants, validationError := service.GetSortedRestaurants(sortBy, order)
+	if validationError != "" {
+		response.WriteError(w, http.StatusBadRequest, validationError)
+		return
+	}
+
+	response.WriteSuccess(w, http.StatusOK, sortedRestaurants)
+}

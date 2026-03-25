@@ -1,6 +1,7 @@
 package service
 
 import (
+	"sort"
 	"strings"
 
 	"github.com/akhileshkasarapu3/quickbite/internal/model"
@@ -47,4 +48,42 @@ func GetRestaurantsByCuisine(cuisine string) []model.Restaurant {
 	}
 
 	return filteredRestaurants
+}
+
+func GetSortedRestaurants(sortBy string, order string) ([]model.Restaurant, string){
+	restaurants := repository.GetRestaurants()
+
+	normalizedSortBy := strings.TrimSpace(strings.ToLower(sortBy))
+	normalizedOrder  := strings.TrimSpace(strings.ToLower(order))
+
+	if normalizedOrder == "" {
+		normalizedOrder = "asc"
+	}
+
+	if normalizedOrder != "asc" && normalizedOrder != "desc" {
+		return nil, "invalid sort order, use asc or desc"
+	}
+
+	switch normalizedSortBy {
+	case "rating":
+		sort.Slice(restaurants, func(i, j int)	bool {
+			if normalizedOrder == "asc" {
+				return restaurants[i].Rating < restaurants[j].Rating
+			}
+			return restaurants[i].Rating > restaurants[j].Rating
+		})
+
+	case "eta":
+		sort.Slice(restaurants, func(i, j int) bool {
+			if normalizedOrder == "asc" {
+				return restaurants[i].ETAInMin < restaurants[j].ETAInMin
+			}
+			return restaurants[i].ETAInMin > restaurants[j].ETAInMin
+		})
+
+	default:
+		return nil, "invalid sort field, use rating or eta"
+	}
+
+	return restaurants, ""
 }
