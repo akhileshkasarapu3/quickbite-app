@@ -11,4 +11,5 @@ func registerRestaurantRoutes(mux *http.ServeMux) {
 	mux.HandleFunc("/api/v1/restaurants/open", handler.GetOpenRestaurants)
 	mux.HandleFunc("/api/v1/restaurants/sort", handler.GetSortedRestaurants)
 	mux.HandleFunc("/api/v1/restaurants/cuisine", handler.GetRestaurantsByCuisine)
+	mux.HandleFunc("/api/v1/restaurants/search", handler.SearchRestaurants)
 }

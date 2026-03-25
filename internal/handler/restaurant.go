@@ -93,3 +93,25 @@ func GetSortedRestaurants(w http.ResponseWriter, r *http.Request){
 
 	response.WriteSuccess(w, http.StatusOK, sortedRestaurants)
 }
+
+// GET /api/v1/restaurants/search?type=Indian&open=true&sort=rating&order=desc
+// SearchRestaurants handles combined filtering + sorting.
+func SearchRestaurants(w http.ResponseWriter, r *http.Request){
+	if r.Method != http.MethodGet {
+		response.WriteError(w, http.StatusMethodNotAllowed, "method not allowed")
+		return
+	}
+
+	cuisineType := r.URL.Query().Get("type")
+	openOnly := r.URL.Query().Get("open")
+	sortBy := r.URL.Query().Get("sort")
+	order := r.URL.Query().Get("order")
+
+	restaurants, validationError := service.SearchRestaurants(cuisineType, openOnly, sortBy, order)
+	if validationError != "" {
+		response.WriteError(w, http.StatusBadRequest, validationError)
+		return 
+	}
+
+	response.WriteSuccess(w, http.StatusOK, restaurants)
+}
