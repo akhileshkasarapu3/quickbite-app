@@ -39,3 +39,30 @@ func GetRestaurantByID(w http.ResponseWriter, r *http.Request){
 
 	response.WriteSuccess(w, http.StatusOK, restaurant)
 }
+
+func GetRestaurantsByCuisine(w http.ResponseWriter, r *http.Request){
+	if r.Method != http.MethodGet {
+		response.WriteError(w, http.StatusMethodNotAllowed, "method not allowed")
+		return
+	}
+
+	cuisineType := r.URL.Query().Get("type")
+	if cuisineType == "" {
+		response.WriteError(w, http.StatusBadRequest, "cuisine type is required")
+		return 
+	}
+
+	filteredRestaurants := service.GetRestaurantsByCuisine(cuisineType)
+	response.WriteSuccess(w, http.StatusOK, filteredRestaurants)
+}
+
+// GetOpenRestaurants handles GET /api/v1/restaurants/open.
+func GetOpenRestaurants(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodGet {
+		response.WriteError(w, http.StatusMethodNotAllowed, "method not allowed")
+		return
+	}
+
+	openRestaurants := service.GetOpenRestaurants()
+	response.WriteSuccess(w, http.StatusOK, openRestaurants)
+}
